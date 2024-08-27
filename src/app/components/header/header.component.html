@@ -1,0 +1,9 @@
+<header class="header">
+    <div class="header-content">
+        <div class="header-buttons">
+            <button *ngIf="!isLoggedIn" class="btn btn-login">Login</button>
+            <button *ngIf="!isLoggedIn" class="btn btn-signup">Signup</button>
+            <button *ngIf="isLoggedIn" class="btn btn-logout">Logout</button>
+        </div>
+    </div>
+</header>
