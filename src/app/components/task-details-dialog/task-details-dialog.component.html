@@ -1,0 +1,13 @@
+<div class="dialog-box">
+  <h2 mat-dialog-title>Task Details</h2>
+
+  <div mat-dialog-content>
+    <p><strong>Title:</strong> {{ task.title }}</p>
+    <p><strong>Description:</strong> {{ task.description }}</p>
+    <p><strong>Date Created:</strong> {{ task.createdAt | date : "short" }}</p>
+  </div>
+
+  <div mat-dialog-actions>
+    <button mat-button class="close-button" (click)="onClose()">Close</button>
+  </div>
+</div>

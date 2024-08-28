@@ -9,13 +9,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
 import { HeaderComponent } from './components/header/header.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-// import { TaskDialogComponent } from './components/task-dialog/task-dialog.component';
-// import { MatDialogModule } from '@angular/material/dialog';
-// import { MatFormFieldModule } from '@angular/material/form-field';
-// import { MatInputModule } from '@angular/material/input';
-// import { MatButtonModule } from '@angular/material/button';
-
+import { TaskDialogComponent } from './components/task-dialog/task-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { TaskDetailsDialogComponent } from './components/task-details-dialog/task-details-dialog.component';
+import { CookieService } from 'ngx-cookie-service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { CommonModule } from '@angular/common';
+import { LoaderComponent } from './components/loader/loader.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,7 +24,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     LoginComponent,
     HeaderComponent,
     DashboardComponent,
-    // TaskDialogComponent
+    TaskDialogComponent,
+    TaskDetailsDialogComponent,
+    LoaderComponent
   ],
   imports: [
     BrowserModule,
@@ -32,11 +35,10 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     ReactiveFormsModule,
     SocialLoginModule,
     HttpClientModule,
-    DragDropModule,
-    // MatDialogModule,
-    // MatFormFieldModule,
-    // MatInputModule,
-    // MatButtonModule
+    MatDialogModule,
+    BrowserAnimationsModule,
+    MatSnackBarModule,
+    CommonModule
   ],
   providers: [
     {
@@ -53,6 +55,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
         ],
       } as SocialAuthServiceConfig,
     },
+    CookieService
   ],
   bootstrap: [AppComponent]
 })

@@ -1,28 +1,35 @@
 import { Component, Inject } from '@angular/core';
-// import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-task-dialog',
   templateUrl: './task-dialog.component.html',
-  styleUrls: ['./task-dialog.component.scss']
+  styleUrls: ['./task-dialog.component.scss'],
 })
 export class TaskDialogComponent {
-  task = { title: '', description: '' };
+  task: any = {};
 
-  // constructor(
-  //   public dialogRef: MatDialogRef<TaskDialogComponent>,
-  //   @Inject(MAT_DIALOG_DATA) public data: { isEdit: boolean; task?: any }
-  // ) {
-  //   if (data.isEdit && data.task) {
-  //     this.task = { ...data.task };
-  //   }
-  // }
+  constructor(
+    public dialogRef: MatDialogRef<TaskDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    if (data.isEdit) {
+      this.task = { ...data.task };
+    }
+  }
 
-  // onSave(): void {
-  //   this.dialogRef.close(this.task);
-  // }
+  onCancel(): void {
+    this.dialogRef.close();
+  }
 
-  // onCancel(): void {
-  //   this.dialogRef.close();
-  // }
+  onSave(): void {
+     // Check if the createdAt property is already present
+     if (!this.task.createdAt) {
+      // Add the current date and time to the task's createdAt field only if it's not already set
+      this.task.createdAt = new Date();
+    }
+
+    // Close the dialog and pass the updated task object
+    this.dialogRef.close(this.task);
+  }
 }

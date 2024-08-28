@@ -62,3 +62,9 @@
   cursor: pointer;
   text-align: center;
 }
+/* Center the buttonDiv container */
+#buttonDiv {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px; /* Adjust spacing as needed */
+}

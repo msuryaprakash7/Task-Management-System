@@ -1,137 +1,115 @@
 <app-header></app-header>
-<main class="row dashboard">
-  <div class="col-md-1"></div>
-  <div class="col-md-10">
-    <div class="dashboard-controls">
-      <button class="btn btn-add-task" (click)="openTaskDialog()">Add Task</button>
-      <div class="buttons">
-        <div class="search-sort">
-          <div class="search-container">
-            <label for="search">Search:</label>
-            <input type="text" id="search" placeholder="Search..." />
-          </div>
-          <div class="sort-container">
-            <label for="sort">Sort By:</label>
-            <select id="sort">
-              <option value="recent" selected>Recent</option>
-              <option value="oldest">Oldest</option>
-              <option value="priority">Priority</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- dashboard.component.html -->
-    <div class="row">
-      <!-- To Do Section -->
-      <div class="col-md-4">
-        <div
-          class="task-box todo"
-          (dragover)="onDragOver($event)"
-          (drop)="onDrop($event, 'todo')"
-        >
-          <h3>To Do</h3>
-          <div *ngFor="let task of todoTasks" draggable="true" (dragstart)="onDragStart(task)">
-            <div class="task">
-              <h4>{{ task.title }}</h4>
-              <p>{{ task.description }}</p>
-              <p class="created-at">
-                Created at:
-                {{ task.createdAt | date : "dd/MM/yyyy, h:mm:ss a" }}
-              </p>
-              <div class="task-actions">
-                <button class="btn btn-delete" (click)="deleteTask(task)">
-                  Delete
-                </button>
-                <button class="btn btn-edit" (click)="editTask(task)">
-                  Edit
-                </button>
-                <button
-                  class="btn btn-view-details"
-                  (click)="viewDetails(task)"
-                >
-                  View Details
-                </button>
-              </div>
+<main class="dashboard">
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <div class="dashboard-controls">
+        <button class="btn btn-add-task" (click)="openTaskDialog()">
+          Add Task
+        </button>
+        <div class="buttons">
+          <div class="search-sort">
+            <div class="search-container">
+              <label for="search">Search:</label>
+              <input type="text" id="search" (input)="onSearchChange($event)" placeholder="Search..." />
+            </div>
+            <div class="sort-container">
+              <label for="sort">Sort By:</label>
+              <select id="sort" (change)="onSortChange($event)">
+                <option value="recent" selected>Recent</option>
+                <option value="oldest">Oldest</option>
+              </select>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- In Progress Section -->
-      <div class="col-md-4">
-        <div
-          class="task-box in-progress"
-          (dragover)="onDragOver($event)"
-          (drop)="onDrop($event, 'in progress')"
-        >
-          <h3>In Progress</h3>
-          <div
-            *ngFor="let task of inProgressTasks"
-            draggable="true"
-            (dragstart)="onDragStart(task)"
-          >
-            <div class="task">
-              <h4>{{ task.title }}</h4>
-              <p>{{ task.description }}</p>
-              <p class="created-at">
-                Created at:
-                {{ task.createdAt | date : "dd/MM/yyyy, h:mm:ss a" }}
-              </p>
-              <div class="task-actions">
-                <button class="btn btn-delete" (click)="deleteTask(task)">
-                  Delete
-                </button>
-                <button class="btn btn-edit" (click)="editTask(task)">
-                  Edit
-                </button>
-                <button
-                  class="btn btn-view-details"
-                  (click)="viewDetails(task)"
-                >
-                  View Details
-                </button>
+      <!-- dashboard.component.html -->
+      <div class="row">
+        <!-- To Do Section -->
+        <div class="col-md-4">
+          <div class="task-box todo" (dragover)="onDragOver($event)" (drop)="onDrop($event, 'todo')">
+            <h3>To Do</h3>
+            <div *ngFor="let task of todoTasks" draggable="true" (dragstart)="onDragStart(task)">
+              <div class="task">
+                <h4>{{ task.title }}</h4>
+                <p>{{ task.description }}</p>
+                <p class="created-at">
+                  Created at:
+                  {{ task.createdAt | date : "dd/MM/yyyy, h:mm:ss a" }}
+                </p>
+                <div class="task-actions">
+                  <button class="btn btn-delete" (click)="deleteTask(task)">
+                    Delete
+                  </button>
+                  <button class="btn btn-edit" (click)="openTaskDialog(task)">
+                    Edit
+                  </button>
+                  <button class="btn btn-view-details" (click)="viewDetails(task)">
+                    View Details
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Done Section -->
-      <div class="col-md-4">
-        <div
-          class="task-box done"
-          (dragover)="onDragOver($event)"
-          (drop)="onDrop($event, 'done')"
-        >
-          <h3>Done</h3>
-          <div *ngFor="let task of doneTasks" draggable="true" (dragstart)="onDragStart(task)">
-            <div class="task">
-              <h4>{{ task.title }}</h4>
-              <p>{{ task.description }}</p>
-              <p class="created-at">
-                Created at:
-                {{ task.createdAt | date : "dd/MM/yyyy, h:mm:ss a" }}
-              </p>
-              <div class="task-actions">
-                <button class="btn btn-delete" (click)="deleteTask(task)">
-                  Delete
-                </button>
-                <button class="btn btn-edit" (click)="editTask(task)">
-                  Edit
-                </button>
-                <button
-                  class="btn btn-view-details"
-                  (click)="viewDetails(task)"
-                >
-                  View Details
-                </button>
+        <!-- In Progress Section -->
+        <div class="col-md-4">
+          <div class="task-box in-progress" (dragover)="onDragOver($event)" (drop)="onDrop($event, 'in progress')">
+            <h3>In Progress</h3>
+            <div *ngFor="let task of inProgressTasks" draggable="true" (dragstart)="onDragStart(task)">
+              <div class="task">
+                <h4>{{ task.title }}</h4>
+                <p>{{ task.description }}</p>
+                <p class="created-at">
+                  Created at:
+                  {{ task.createdAt | date : "dd/MM/yyyy, h:mm:ss a" }}
+                </p>
+                <div class="task-actions">
+                  <button class="btn btn-delete" (click)="deleteTask(task)">
+                    Delete
+                  </button>
+                  <button class="btn btn-edit" (click)="openTaskDialog(task)">
+                    Edit
+                  </button>
+                  <button class="btn btn-view-details" (click)="viewDetails(task)">
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Done Section -->
+        <div class="col-md-4">
+          <div class="task-box done" (dragover)="onDragOver($event)" (drop)="onDrop($event, 'done')">
+            <h3>Done</h3>
+            <div *ngFor="let task of doneTasks" draggable="true" (dragstart)="onDragStart(task)">
+              <div class="task">
+                <h4>{{ task.title }}</h4>
+                <p>{{ task.description }}</p>
+                <p class="created-at">
+                  Created at:
+                  {{ task.createdAt | date : "dd/MM/yyyy, h:mm:ss a" }}
+                </p>
+                <div class="task-actions">
+                  <button class="btn btn-delete" (click)="deleteTask(task)">
+                    Delete
+                  </button>
+                  <button class="btn btn-edit" (click)="openTaskDialog(task)">
+                    Edit
+                  </button>
+                  <button class="btn btn-view-details" (click)="viewDetails(task)">
+                    View Details
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <div class="col-md-1"></div>
   </div>
-  <div class="col-md-1"></div>
 </main>

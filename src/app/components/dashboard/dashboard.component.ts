@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar'; // For notifications
 import { Task } from './task.model';
-// import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
+import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
+import { TaskDetailsDialogComponent } from '../task-details-dialog/task-details-dialog.component';
+import { DashboardService } from 'src/app/services/dashboard.service';
+import { LoaderService } from 'src/app/services/loader.service'; // Assuming you have a LoaderService
 
 @Component({
   selector: 'app-dashboard',
@@ -13,72 +17,137 @@ export class DashboardComponent implements OnInit {
   todoTasks: Task[] = [];
   inProgressTasks: Task[] = [];
   doneTasks: Task[] = [];
-
-  // constructor(public dialog: MatDialog) {}
+  tasks: Task[] = [];
+  filteredTasks: Task[] = []; // Holds tasks after search and sort
+  searchQuery: string = '';
+  sortOption: string = '';
+  constructor(
+    public dialog: MatDialog,
+    private dashboardService: DashboardService,
+    private loaderService: LoaderService, // Inject LoaderService
+    private snackBar: MatSnackBar // Inject MatSnackBar for notifications
+  ) {}
 
   ngOnInit(): void {
-    // Sample data
-    const tasks: Task[] = [
-      {
-        _id: '1',
-        title: 'Task 1',
-        description: 'Description for task 1',
-        createdAt: new Date('2024-08-26T12:34:56Z'),
-        type: 'todo',
-      },
-      {
-        _id: '2',
-        title: 'Task 2',
-        description: 'Description for task 2',
-        createdAt: new Date('2024-08-26T13:45:56Z'),
-        type: 'in progress',
-      },
-      {
-        _id: '3',
-        title: 'Task 3',
-        description: 'Description for task 3',
-        createdAt: new Date('2024-08-26T14:56:56Z'),
-        type: 'done',
-      },
-    ];
-
-    // Split tasks into different arrays based on type
-    this.todoTasks = tasks.filter((t) => t.type === 'todo');
-    this.inProgressTasks = tasks.filter((t) => t.type === 'in progress');
-    this.doneTasks = tasks.filter((t) => t.type === 'done');
+    this.fetchTasks();
+  }
+  filterTasks(searchTerm: string = ''): void {
+    this.filteredTasks = this.tasks.filter(task =>
+      task.title.toLowerCase().includes(searchTerm) ||
+      task.description.toLowerCase().includes(searchTerm)
+    );
+    this.updateTaskLists();
   }
 
+  sortTasks(sortOrder: string): void {
+    switch (sortOrder) {
+      case 'recent':
+        this.filteredTasks.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+      case 'oldest':
+        this.filteredTasks.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        break;
+    }
+    this.updateTaskLists();
+  }
+
+  updateTaskLists(): void {
+    this.todoTasks = this.filteredTasks.filter(task => task.type === 'todo');
+    this.inProgressTasks = this.filteredTasks.filter(task => task.type === 'in progress');
+    this.doneTasks = this.filteredTasks.filter(task => task.type === 'done');
+  }
+  fetchTasks(): void {
+    this.loaderService.show(); // Show loader
+    this.dashboardService.getTasks().subscribe(
+      (response: { data: Task[] }) => {
+        this.loaderService.hide(); // Hide loader
+        this.tasks = response.data;
+        this.filterTasks();
+        this.todoTasks = this.tasks.filter((t) => t.type === 'todo');
+        this.inProgressTasks = this.tasks.filter((t) => t.type === 'in progress');
+        this.doneTasks = this.tasks.filter((t) => t.type === 'done');
+        this.snackBar.open(`Task fetched successfully.`, 'Close', {
+          duration: 3000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+        });
+      },
+      (error) => {
+        this.loaderService.hide(); // Hide loader
+        console.error('Error fetching tasks:', error);
+        this.snackBar.open('Error fetching tasks', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['error-snackbar'],
+        });
+      }
+    );
+  }
+  onSearchChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const searchTerm = input.value.toLowerCase();
+    this.filterTasks(searchTerm);
+  }
+
+  onSortChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const sortOrder = select.value;
+    this.sortTasks(sortOrder);
+  }
   onDragStart(task: Task) {
     this.currentTask = task;
   }
 
   onDrop(event: any, newType: string): void {
     event.preventDefault();
-
     if (!this.currentTask) {
       console.error('No task currently being dragged');
       return;
     }
 
-    const previousType = this.currentTask.type; // Use the type stored in currentTask
-
-    // Ensure the task type is different
+    const previousType = this.currentTask.type;
     if (previousType === newType) {
       return;
     }
 
-    // Remove the task from the previous list
     this.removeTaskFromList(previousType, this.currentTask._id);
-
-    // Update the task type and add it to the new list
     this.currentTask.type = newType;
     this.addTaskToList(newType, this.currentTask);
 
-    // Handle the task move
     this.handleTaskMoved(this.currentTask, newType);
-
-    // Reset the current task
+    this.updateTaskOnServer(this.currentTask);
     this.currentTask = {};
+  }
+
+  updateTaskOnServer(task: Task): void {
+    this.loaderService.show(); // Show loader
+    this.dashboardService.updateTask(task).subscribe(
+      () => {
+        this.loaderService.hide(); // Hide loader
+        this.snackBar.open(
+          `Task ${task.title} successfully updated.`,
+          'Close',
+          {
+            duration: 3000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+          }
+        );
+      },
+      (error) => {
+        this.loaderService.hide(); // Hide loader
+        console.error('Error updating task:', error);
+        this.snackBar.open('Error updating task', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['error-snackbar'],
+        });
+        this.removeTaskFromList(task.type, task._id);
+        this.addTaskToList(task.type, task);
+      }
+    );
   }
 
   onDragOver($event: any) {
@@ -109,59 +178,134 @@ export class DashboardComponent implements OnInit {
     console.log(`Task ${task.title} moved to ${newType}`);
   }
 
-  deleteTask(task: any) {
-    console.log(`Deleting task ${task.title}`);
-    // Implement deletion logic here
+  deleteTask(task: Task) {
+    this.loaderService.show(); // Show loader
+    this.dashboardService.deleteTask(task._id).subscribe(
+      () => {
+        this.loaderService.hide(); // Hide loader
+        this.removeTaskFromList(task.type, task._id);
+        this.snackBar.open(`Task ${task.title} deleted.`, 'Close', {
+          duration: 3000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+        });
+      },
+      (error) => {
+        this.loaderService.hide(); // Hide loader
+        console.error('Error deleting task:', error);
+        this.snackBar.open('Error deleting task', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['error-snackbar'],
+        });
+      }
+    );
   }
 
-  editTask(task: any) {
-    console.log(`Editing task ${task.title}`);
-    // Implement editing logic here
+  editTask(task: Task) {
+    this.openTaskDialog(task);
   }
 
-  viewDetails(task: any) {
-    console.log(`Viewing details for task ${task.title}`);
-    // Implement view details logic here
+  viewDetails(task: Task) {
+    this.dialog.open(TaskDetailsDialogComponent, {
+      data: { task: task },
+      width: '400px',
+    });
   }
 
   openTaskDialog(task?: Task): void {
     const isEdit = !!task;
-    // const dialogRef = this.dialog.open(TaskDialogComponent, {
-    //   width: '400px',
-    //   data: { isEdit, task },
-    // });
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
+      width: '400px',
+      data: { isEdit, task },
+    });
 
-    // dialogRef.afterClosed().subscribe((result: Task) => {
-    //   if (result) {
-    //     if (isEdit) {
-    //       // Update task
-    //       this.updateTask(result);
-    //     } else {
-    //       // Add new task
-    //       result._id = new Date().toISOString(); // Generate a unique ID for new task
-    //       result.type = 'todo'; // Default to 'todo'
-    //       this.addTaskToList('todo', result);
-    //     }
-    //   }
-    // });
+    dialogRef.afterClosed().subscribe((result: Task) => {
+      if (result) {
+        if (isEdit) {
+          this.updateTask(result);
+        } else {
+          result._id = new Date().toISOString();
+          result.type = 'todo';
+          this.loaderService.show(); // Show loader
+          this.dashboardService.addTask(result).subscribe(
+            () => {
+              this.loaderService.hide(); // Hide loader
+              this.addTaskToList('todo', result);
+              this.snackBar.open('Task added successfully.', 'Close', {
+                duration: 3000,
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+              });
+              this.fetchTasks();
+            },
+            (error) => {
+              this.loaderService.hide(); // Hide loader
+              console.error('Error adding task:', error);
+              this.snackBar.open('Error adding task', 'Close', {
+                duration: 3000,
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar'],
+              });
+            }
+          );
+        }
+      }
+    });
   }
 
   updateTask(updatedTask: Task): void {
-    const index = this.findTaskIndexById(updatedTask._id);
+    const taskList = this.getTaskListByType(updatedTask.type);
+    if (taskList.length === 0) {
+      console.error(`No tasks found for type: ${updatedTask.type}`);
+      return;
+    }
+
+    const index = taskList.findIndex((task) => task._id === updatedTask._id);
     if (index !== -1) {
-      const list = this.getTaskListByType(updatedTask.type);
-      list[index] = updatedTask;
+      taskList[index] = updatedTask;
+      this.loaderService.show(); // Show loader
+      this.dashboardService.updateTask(updatedTask).subscribe(
+        () => {
+          this.loaderService.hide(); // Hide loader
+          this.fetchTasks();
+          this.snackBar.open('Task updated successfully.', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+          });
+        },
+        (error) => {
+          this.loaderService.hide(); // Hide loader
+          console.error('Error updating task:', error);
+          this.snackBar.open('Error updating task', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+            panelClass: ['error-snackbar'],
+          });
+        }
+      );
+    } else {
+      console.error(
+        `Task with id ${updatedTask._id} not found in type: ${updatedTask.type}`
+      );
     }
   }
 
-  findTaskIndexById(id: string): number {
-    return [...this.todoTasks, ...this.inProgressTasks, ...this.doneTasks].findIndex(task => task._id === id);
-  }
-
   getTaskListByType(type: string): Task[] {
-    if (type === 'todo') return this.todoTasks;
-    if (type === 'in progress') return this.inProgressTasks;
-    if (type === 'done') return this.doneTasks;
-    return [];
+    switch (type) {
+      case 'todo':
+        return this.todoTasks;
+      case 'in progress':
+        return this.inProgressTasks;
+      case 'done':
+        return this.doneTasks;
+      default:
+        console.error(`Unknown task type: ${type}`);
+        return [];
+    }
   }
 }
