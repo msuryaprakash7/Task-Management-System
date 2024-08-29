@@ -68,8 +68,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
         },
         (error) => {
           console.error('Login failed:', error);
-          if (error?.error?.code === 400) {
-            this.snackBar.open(error?.error?.message || 'Invalid credentials.', 'Close', {
+          if (error?.error?.code === 401) {
+            this.snackBar.open(error?.error?.description || 'Invalid credentials.', 'Close', {
               duration: 3000,
               horizontalPosition: 'right',
               verticalPosition: 'top',
@@ -85,22 +85,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
           }
         }
       );
-    }
-  }
-
-  private handleAuthResponse(response: any): void {
-    if (response.code === 201 || response.code === 200) {
-      // Save tokens in cookies using ngx-cookie-service
-      this.cookieService.set('refreshToken', response.data.refreshToken);
-      this.cookieService.set('sessionToken', response.data.sessionToken);
-      this.cookieService.set('expiresIn', response.data.expiresIn);
-
-      // Store user info in local storage
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      // Set isLoggedIn key to true
-      localStorage.setItem('isLoggedIn', 'true');
-      // Redirect to a different page after successful signup or login
-      this.router.navigate(['/dashboard']);
     }
   }
   loadGoogleSignInScript(): Promise<void> {
