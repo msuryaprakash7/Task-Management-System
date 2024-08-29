@@ -20,7 +20,7 @@ export class DashboardComponent implements OnInit {
   tasks: Task[] = [];
   filteredTasks: Task[] = []; // Holds tasks after search and sort
   searchQuery: string = '';
-  sortOption: string = '';
+  sortOption: string = 'recent';
   constructor(
     public dialog: MatDialog,
     private dashboardService: DashboardService,
@@ -62,10 +62,8 @@ export class DashboardComponent implements OnInit {
       (response: { data: Task[] }) => {
         this.loaderService.hide(); // Hide loader
         this.tasks = response.data;
-        this.filterTasks();
-        this.todoTasks = this.tasks.filter((t) => t.type === 'todo');
-        this.inProgressTasks = this.tasks.filter((t) => t.type === 'in progress');
-        this.doneTasks = this.tasks.filter((t) => t.type === 'done');
+        this.filterTasks(this.searchQuery);
+        this.sortTasks(this.sortOption);
         this.snackBar.open(`Task fetched successfully.`, 'Close', {
           duration: 3000,
           horizontalPosition: 'right',
@@ -86,14 +84,14 @@ export class DashboardComponent implements OnInit {
   }
   onSearchChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const searchTerm = input.value.toLowerCase();
-    this.filterTasks(searchTerm);
+    this.searchQuery = input.value.toLowerCase();
+    this.filterTasks(this.searchQuery);
   }
 
   onSortChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
-    const sortOrder = select.value;
-    this.sortTasks(sortOrder);
+    this.sortOption = select.value;
+    this.sortTasks(this.sortOption);
   }
   onDragStart(task: Task) {
     this.currentTask = task;
@@ -125,6 +123,7 @@ export class DashboardComponent implements OnInit {
     this.dashboardService.updateTask(task).subscribe(
       () => {
         this.loaderService.hide(); // Hide loader
+        this.fetchTasks();
         this.snackBar.open(
           `Task ${task.title} successfully updated.`,
           'Close',
