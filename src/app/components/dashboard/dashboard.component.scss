@@ -1,0 +1,150 @@
+.dashboard {
+  padding: 20px;
+
+  .container {
+    max-width: 90%; /* Global width with 5% margin on both sides */
+    margin: 0 auto;
+  }
+
+  .dashboard-controls {
+    margin-bottom: 20px;
+  }
+  .btn-view-details,
+  .btn-delete,
+  .btn-edit {
+    padding: 5px;
+  }
+  .btn-add-task {
+    background-color: #007bff; /* Blue background */
+    color: #fff; /* White text color */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+  .btn-add-task:hover {
+    background-color: #0056b3;
+  }
+
+  .search-sort {
+    border: 1px solid #bbb;
+    padding: 15px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .search-container label,
+  .sort-container label {
+    margin-right: 10px;
+    font-size: 16px;
+    color: #007bff;
+  }
+
+  .search-container input,
+  .sort-container select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+
+  .row {
+    margin-top: 20px;
+  }
+
+  .task-box {
+    background-color: #ffffff; /* Light blue background */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+
+  .section-heading {
+    color: #007bff; /* Blue color */
+    margin-bottom: 20px;
+  }
+
+  .tasks {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .task {
+    background-color: #f0f8ff; /* White background for each task */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .task-content {
+    margin-bottom: 10px;
+  }
+
+  .created-at {
+    color: #6c757d; /* Gray color */
+  }
+
+  .task-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+  }
+
+  .btn-sm {
+    padding: 5px 10px;
+    font-size: 14px;
+    margin-left: 5px;
+  }
+
+  .btn-delete {
+    background-color: #dc3545; /* Red background */
+    color: #fff; /* White text */
+  }
+
+  .btn-edit {
+    background-color: #e0f0ff; /* Light blue background */
+  }
+
+  .btn-view-details {
+    background-color: #007bff; /* Blue background */
+    color: #fff; /* White text */
+  }
+  // Media query for screens smaller than 600px
+  @media (max-width: 600px) {
+    .btn-add-task {
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+
+    .search-container label,
+    .sort-container label {
+      font-size: 14px;
+    }
+
+    .search-container input,
+    .sort-container select {
+      font-size: 14px;
+      padding: 6px 10px;
+      max-width: 150px;
+      margin-right: 15px;
+    }
+
+    .task {
+      font-size: 14px;
+      padding: 10px;
+    }
+
+    .task-actions {
+      gap: 10px;
+    }
+  }
+}

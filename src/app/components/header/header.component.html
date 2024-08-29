@@ -1,0 +1,30 @@
+<header class="row header">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <div class="header-content">
+        <div class="image">
+          <img src="../../../assets/icons/task.png" alt="task" />
+        </div>
+        <div class="header-buttons">
+          <button
+            *ngIf="!isLoggedIn"
+            class="btn btn-login"
+            [routerLink]="['/login']"
+          >
+            Login
+          </button>
+          <button
+            *ngIf="!isLoggedIn"
+            class="btn btn-signup"
+            [routerLink]="['/signup']"
+          >
+            Signup
+          </button>
+          <button *ngIf="isLoggedIn" class="btn btn-logout" (click)="logOut()">
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-1"></div>
+</header>

@@ -1,0 +1,62 @@
+<app-header></app-header>
+<div class="login-container">
+  <h2 class="text-left title">Login</h2>
+  <div class="login-box">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <input
+          type="email"
+          class="form-control"
+          placeholder="Email"
+          formControlName="email"
+        />
+        <div
+          *ngIf="
+            loginForm.controls['email'].invalid &&
+            loginForm.controls['email'].touched
+          "
+          class="text-danger error"
+        >
+          <div *ngIf="loginForm.controls['email'].errors?.['required']">
+            Email is required.
+          </div>
+          <div *ngIf="loginForm.controls['email'].errors?.['email']">
+            Please enter a valid email.
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <input
+          type="password"
+          class="form-control"
+          placeholder="Password"
+          formControlName="password"
+        />
+        <div
+          *ngIf="
+            loginForm.controls['password'].invalid &&
+            loginForm.controls['password'].touched
+          "
+          class="text-danger error"
+        >
+          <div *ngIf="loginForm.controls['password'].errors?.['required']">
+            Password is required.
+          </div>
+          <div *ngIf="loginForm.controls['password'].errors?.['minlength']">
+            Password must be at least 8 characters.
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+
+    <div class="signup-link">
+      <span>Don't have an account? </span>
+      <a [routerLink]="['/signup']" class="signup-link-text">Signup</a>
+    </div>
+
+    <div id="buttonDiv"></div>
+  </div>
+</div>

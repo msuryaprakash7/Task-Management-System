@@ -1,0 +1,178 @@
+<app-header></app-header>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h2 class="text-left mb-4 title">Signup</h2>
+      <div class="card">
+        <div class="card-body">
+          <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="First Name"
+                formControlName="firstName"
+              />
+              <div
+                *ngIf="
+                  signupForm.controls['firstName'].invalid &&
+                  signupForm.controls['firstName'].touched
+                "
+                class="text-danger"
+              >
+                First name is required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Last Name"
+                formControlName="lastName"
+              />
+              <div
+                *ngIf="
+                  signupForm.controls['lastName'].invalid &&
+                  signupForm.controls['lastName'].touched
+                "
+                class="text-danger"
+              >
+                Last name is required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <input
+                type="email"
+                class="form-control"
+                placeholder="Email"
+                formControlName="email"
+              />
+              <div
+                *ngIf="
+                  signupForm.controls['email'].errors &&
+                  signupForm.controls['email'].touched
+                "
+                class="text-danger"
+              >
+                <div *ngIf="signupForm.controls['email'].errors['required']">
+                  Email is required.
+                </div>
+                <div *ngIf="signupForm.controls['email'].errors['email']">
+                  Please enter a valid email address.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Password"
+                formControlName="password"
+              />
+              <div
+                *ngIf="
+                  signupForm.controls['password'].errors &&
+                  signupForm.controls['password'].touched
+                "
+                class="text-danger"
+              >
+                <div
+                  *ngIf="signupForm.controls['password'].errors['minLength']"
+                >
+                  {{ signupForm.controls["password"].errors["minLength"] }}
+                </div>
+                <div
+                  *ngIf="
+                    signupForm.controls['password'].errors['upperCase'] &&
+                    !signupForm.controls['password'].errors['minLength']
+                  "
+                >
+                  {{ signupForm.controls["password"].errors["upperCase"] }}
+                </div>
+                <div
+                  *ngIf="
+                    signupForm.controls['password'].errors['lowerCase'] &&
+                    !signupForm.controls['password'].errors['minLength'] &&
+                    !signupForm.controls['password'].errors['upperCase']
+                  "
+                >
+                  {{ signupForm.controls["password"].errors["lowerCase"] }}
+                </div>
+                <div
+                  *ngIf="
+                    signupForm.controls['password'].errors['numeric'] &&
+                    !signupForm.controls['password'].errors['minLength'] &&
+                    !signupForm.controls['password'].errors['upperCase'] &&
+                    !signupForm.controls['password'].errors['lowerCase']
+                  "
+                >
+                  {{ signupForm.controls["password"].errors["numeric"] }}
+                </div>
+                <div
+                  *ngIf="
+                    signupForm.controls['password'].errors['special'] &&
+                    !signupForm.controls['password'].errors['minLength'] &&
+                    !signupForm.controls['password'].errors['upperCase'] &&
+                    !signupForm.controls['password'].errors['lowerCase'] &&
+                    !signupForm.controls['password'].errors['numeric']
+                  "
+                >
+                  {{ signupForm.controls["password"].errors["special"] }}
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Confirm Password"
+                formControlName="confirmPassword"
+              />
+              <div
+                *ngIf="
+                  signupForm.controls['confirmPassword'].errors &&
+                  signupForm.controls['confirmPassword'].touched
+                "
+                class="text-danger"
+              >
+                <!-- Show 'required' error -->
+                <div
+                  *ngIf="
+                    signupForm.controls['confirmPassword'].errors['required']
+                  "
+                >
+                  Confirm password is required.
+                </div>
+
+                <!-- Show 'password mismatch' error -->
+                <div
+                  *ngIf="
+                    signupForm.controls['confirmPassword'].errors[
+                      'passwordMismatch'
+                    ]
+                  "
+                >
+                  Passwords do not match.
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-primary w-100"
+              [disabled]="signupForm.invalid"
+            >
+              Signup
+            </button>
+          </form>
+          <div class="text-center mt-3">
+            <p>Already have an account? <a [routerLink]="['/login']" class="login-link-text">Login</a></p>
+          </div>
+          <div id="buttonDiv"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
